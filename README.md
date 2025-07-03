@@ -13,16 +13,16 @@ This is a full-stack user management app with:
 
 - **Frontend**: React (Vite), TypeScript, MUI
 - **Backend**: Python, FastAPI, Pydantic, Pandas
-- **Database**: In-memory list (for demo — no persistent DB yet)
+- **Database**: MySQL
 
 ---
 
-## 🚀 How to Run Locally
+##  How to Run Locally
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/SONISOMYA/idmatrix.git
+cd idmatrix
 ```
 2️⃣ Setup backend
 ```bash
@@ -38,10 +38,23 @@ cd frontend
 npm install
 npm run dev
 ```
+4️⃣Setup Database
+1.	Open MySQL:
+   ``` bash
+mysql -u root -p
+
+```
+2.	Run the schema:
+
+``` bash
+SOURCE backend/schema.sql;
+```
+
 
 ## Assumptions & Known Issues
-	•	Data is in-memory only — so all records reset when backend restarts.
-	•	Bulk upload rejects the whole file if any row has invalid data.
-	•	No user authentication yet.
+	•	Uses in-memory storage for now — data resets on server restart.
+	•	Add MySQL connection in database.py to persist data.
+	•	PAN format must match AAAAA9999A.
+	•	Phone number must be 10 digits.
 
 
