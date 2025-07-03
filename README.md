@@ -62,8 +62,7 @@ SOURCE backend/schema.sql;
 
 
 ## Assumptions & Known Issues
-	•	Uses in-memory storage for now — data resets on server restart.
-	•	Add MySQL connection in database.py to persist data.
+	•	Uses MySQL for Db.
 	•	PAN format must match AAAAA9999A.
 	•	Phone number must be 10 digits.
 
