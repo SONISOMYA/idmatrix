@@ -4,11 +4,15 @@ import { getUsers, deleteUser, uploadUsers } from './api';
 import UserForm from './components/UserForm';
 import UserTable from './components/UserTable';
 import type { User } from './types';
+import BulkUploadErrorDialog from './components/BulkUploadErrorDialog';
 
 export default function App() {
   const [users, setUsers] = useState<User[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [bulkErrors, setBulkErrors] = useState<string[]>([]);
+  const [showBulkErrorDialog, setShowBulkErrorDialog] = useState(false);
 
   const fetchUsers = async () => {
     const data = await getUsers();
@@ -16,25 +20,32 @@ export default function App() {
   };
 
   const handleDelete = async (id: number) => {
-    await deleteUser(id);
-    fetchUsers();
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      await deleteUser(id);
+      fetchUsers();
+    }
   };
 
   const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    try {
-      await uploadUsers(file);
-      alert('✅ Bulk upload successful!');
-      fetchUsers();
-    } catch (err: any) {
-      const errors = await err.response?.json();
-      alert('❌ Errors:\n' + (errors?.detail?.join('\n') || err.message));
-    } finally {
-      e.target.value = '';
+  try {
+    await uploadUsers(file);
+    alert('Upload through Excel successful!');
+    fetchUsers();
+  } catch (err: any) {
+    const errors = await err.response?.json();
+    if (errors?.detail) {
+      setBulkErrors(errors.detail);
+      setShowBulkErrorDialog(true);
+    } else {
+      alert(err.message);
     }
-  };
+  } finally {
+    e.target.value = '';
+  }
+};
 
   useEffect(() => {
     fetchUsers();
@@ -53,12 +64,15 @@ export default function App() {
             mb: 4,
           }}
         >
-          <Typography variant="h4">🧩 idMatrix — User Management</Typography>
+          <Typography variant="h4">IDMatrix — User Management System</Typography>
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
               sx={{ bgcolor: '#7F00FF' }}
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => {
+                setEditingUser(null);
+                setShowForm(!showForm);
+              }}
             >
               {showForm ? 'Close Form' : 'Add User'}
             </Button>
@@ -86,11 +100,34 @@ export default function App() {
 
         {showForm && (
           <Box sx={{ mb: 4 }}>
-            <UserForm onUserCreated={fetchUsers} />
+            <UserForm
+              onUserSaved={() => {
+                fetchUsers();
+                setEditingUser(null);
+                setShowForm(false);
+              }}
+              userToEdit={editingUser}
+              onCancelEdit={() => {
+                setEditingUser(null);
+                setShowForm(false);
+              }}
+            />
           </Box>
         )}
 
-        <UserTable users={users} onUserDeleted={handleDelete} />
+        <UserTable
+          users={users}
+          onUserDeleted={handleDelete}
+          onUserEdit={(user) => {
+            setEditingUser(user);
+            setShowForm(true);
+          }}
+        />
+        <BulkUploadErrorDialog
+  open={showBulkErrorDialog}
+  onClose={() => setShowBulkErrorDialog(false)}
+  errors={bulkErrors}
+/>
       </Container>
     </Box>
   );

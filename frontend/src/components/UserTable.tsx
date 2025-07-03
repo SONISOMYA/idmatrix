@@ -1,6 +1,7 @@
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import type { GridColDef, GridRowParams } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { Box } from '@mui/material';
 
 interface User {
@@ -15,9 +16,10 @@ interface User {
 interface Props {
   users: User[];
   onUserDeleted: (id: number) => void;
+  onUserEdit: (user: User) => void;
 }
 
-export default function UserTable({ users, onUserDeleted }: Props) {
+export default function UserTable({ users, onUserDeleted, onUserEdit }: Props) {
   const rows = users.map((user, index) => ({
     ...user,
     srNo: index + 1,
@@ -33,16 +35,22 @@ export default function UserTable({ users, onUserDeleted }: Props) {
     {
       field: 'actions',
       headerName: 'Actions',
-      type: 'actions', // ✅ MUST be exactly "actions"
-      width: 100,
+      type: 'actions',
+      width: 120,
       getActions: (params: GridRowParams) => [
+        <GridActionsCellItem
+          icon={<EditIcon sx={{ color: '#00bcd4' }} />}
+          label="Edit"
+          onClick={() => {
+            onUserEdit(params.row as User);
+          }}
+        />,
         <GridActionsCellItem
           icon={<DeleteIcon sx={{ color: '#f44336' }} />}
           label="Delete"
           onClick={() => {
-            if (window.confirm('Delete this user?')) {
-              onUserDeleted(params.row.id);
-            }
+            // 👉 Just call the handler — let parent decide confirm & toast
+            onUserDeleted(params.row.id);
           }}
         />,
       ],
@@ -58,9 +66,9 @@ export default function UserTable({ users, onUserDeleted }: Props) {
         disableRowSelectionOnClick
         pagination
         initialState={{
-          pagination: { paginationModel: { pageSize: 10, page: 0 } },
+          pagination: { paginationModel: { pageSize: 15, page: 0 } },
         }}
-        pageSizeOptions={[5, 10, 20]}
+        pageSizeOptions={[15, 20]}
       />
     </Box>
   );

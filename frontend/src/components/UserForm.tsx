@@ -1,15 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { createUser } from '../api';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { createUser, updateUser } from '../api';
 import type { User } from '../types';
 
 interface Props {
-  onUserCreated: () => void;
+  onUserSaved: () => void;
+  userToEdit?: User | null;
+  onCancelEdit: () => void;
 }
 
-export default function UserForm({ onUserCreated }: Props) {
+export default function UserForm({ onUserSaved, userToEdit, onCancelEdit }: Props) {
   const [form, setForm] = useState<Omit<User, 'id'>>({
     first_name: '',
     last_name: '',
@@ -18,15 +24,58 @@ export default function UserForm({ onUserCreated }: Props) {
     pan_number: '',
   });
 
+  const [showPAN, setShowPAN] = useState(false);
+
+  useEffect(() => {
+    if (userToEdit) {
+      setForm({
+        first_name: userToEdit.first_name,
+        last_name: userToEdit.last_name,
+        email: userToEdit.email,
+        phone_number: userToEdit.phone_number,
+        pan_number: userToEdit.pan_number,
+      });
+    }
+  }, [userToEdit]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validate = () => {
+    if (!form.first_name || !form.last_name || !form.email || !form.phone_number || !form.pan_number) {
+      return 'All fields are required.';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      return 'Invalid email format.';
+    }
+    if (!/^\d{10}$/.test(form.phone_number)) {
+      return 'Phone number must be 10 digits.';
+    }
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(form.pan_number.toUpperCase())) {
+      return 'PAN must be in format AAAAA9999A.';
+    }
+    return '';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const error = validate();
+    if (error) {
+      alert(error);
+      return;
+    }
+
     try {
-      await createUser(form);
-      onUserCreated();
+      if (userToEdit) {
+        await updateUser(userToEdit.id, form);
+        alert('✅ User updated successfully!');
+      } else {
+        await createUser(form);
+        alert('✅ User created successfully!');
+      }
+      onUserSaved();
       setForm({
         first_name: '',
         last_name: '',
@@ -35,7 +84,7 @@ export default function UserForm({ onUserCreated }: Props) {
         pan_number: '',
       });
     } catch {
-      alert('Error creating user.');
+      alert('❌ Error saving user.');
     }
   };
 
@@ -98,33 +147,49 @@ export default function UserForm({ onUserCreated }: Props) {
           fullWidth
           label="PAN Number"
           name="pan_number"
+          type={showPAN ? 'text' : 'password'}
           value={form.pan_number}
           onChange={handleChange}
           InputLabelProps={{ style: { color: '#fff' } }}
-          InputProps={{ style: { color: '#fff' } }}
+          InputProps={{
+            style: { color: '#fff' },
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPAN(!showPAN)} sx={{ color: '#fff' }}>
+                  {showPAN ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </Box>
 
-      <Button
-        variant="contained"
-        type="submit"
-        sx={{
-          mt: 3,
-          background: '#7F00FF',
-          color: '#fff',
-          borderRadius: '2px',
-          px: 3,
-          py: 1.5,
-          fontSize: '1rem',
-          textTransform: 'none',
-          '&:hover': {
-            transform: 'scale(1.05)',
+      <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+        <Button
+          variant="contained"
+          type="submit"
+          sx={{
             background: '#7F00FF',
-          },
-        }}
-      >
-        Create User
-      </Button>
+            color: '#fff',
+            borderRadius: '2px',
+            px: 3,
+            py: 1.2,
+            fontSize: '1rem',
+            textTransform: 'none',
+            '&:hover': {
+              transform: 'scale(1.05)',
+              background: '#7F00FF',
+            },
+          }}
+        >
+          {userToEdit ? 'Update User' : 'Create User'}
+        </Button>
+        {userToEdit && (
+          <Button variant="outlined" onClick={onCancelEdit} sx={{ color: '#fff', borderColor: '#fff' }}>
+            Cancel
+          </Button>
+        )}
+      </Box>
     </Box>
   );
 }
