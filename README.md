@@ -16,6 +16,16 @@ This is a full-stack user management app with:
 - **Database**: MySQL
 
 ---
+## Screenshots
+
+### 🏠 Home Dashboard
+![Home](./screenshots/home.png)
+
+### ➕ Add User Form
+![Add User](./screenshots/adduser.png)
+
+### 🗃️ SQL Database (Example)
+![SQL](./screenshots/sql.png)
 
 ##  How to Run Locally
 
