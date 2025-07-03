@@ -1,0 +1,114 @@
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  color: #fff;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  background: linear-gradient(-45deg, #141e30, #243b55, #0f2027, #203a43);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+header {
+  width: 100%;
+  padding: 20px 40px;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 120px;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.add-user-btn {
+  margin-top: 30px;
+  background: #7F00FF;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+}
+
+.add-user-btn:hover {
+  transform: scale(1.05);
+}
+
+.table-container {
+  width: 90%;
+  max-width: 1200px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 40px;
+  backdrop-filter: blur(20px);
+  text-align: center;
+}
+
+.modal-content button {
+  margin: 20px;
+  padding: 15px 30px;
+  border: none;
+  background: #7F00FF;
+  border-radius: 40px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  transform: scale(1.05);
+}
