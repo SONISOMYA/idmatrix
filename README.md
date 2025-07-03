@@ -2,10 +2,10 @@
 
 ##  Overview
 This is a full-stack user management app with:
-- ✅ Create, update, delete users
-- ✅ Bulk upload users via Excel
-- ✅ Downloadable template
-- ✅ Validations and clear error feedback
+- Create, update, delete users
+- Bulk upload users via Excel
+- Downloadable template
+- Validations and clear error feedback
 
 ---
 
