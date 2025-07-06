@@ -49,7 +49,7 @@ export default function UserTable({ users, onUserDeleted, onUserEdit }: Props) {
           icon={<DeleteIcon sx={{ color: '#f44336' }} />}
           label="Delete"
           onClick={() => {
-            // 👉 Just call the handler — let parent decide confirm & toast
+      
             onUserDeleted(params.row.id);
           }}
         />,
